@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-color: #f8fafc;
+    --bg-gradient: linear-gradient(135deg, #f0f4ff 0%, #e2e8f0 100%);
+    --card-bg: rgba(255, 255, 255, 0.7);
+    --card-border: rgba(255, 255, 255, 0.8);
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --success-bg: #d1fae5;
+    --warning-bg: #fef3c7;
+    --danger-bg: #fee2e2;
+  }
+
+  [data-theme='dark'] {
+    --bg-color: #0f172a;
+    --bg-gradient: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+    --card-bg: rgba(30, 41, 59, 0.6);
+    --card-border: rgba(51, 65, 85, 0.8);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --success-bg: rgba(16, 185, 129, 0.2);
+    --warning-bg: rgba(245, 158, 11, 0.2);
+    --danger-bg: rgba(239, 68, 68, 0.2);
+  }
+
+  body {
+    @apply font-sans;
+    background-color: var(--bg-color);
+    background-image: var(--bg-gradient);
+    background-attachment: fixed;
+    color: var(--text-main);
+  }
+}
+
+@layer components {
+  .glass-panel {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--card-border);
+    @apply rounded-2xl shadow-md transition-all duration-300;
+  }
+
+  .glass-panel:hover {
+    @apply shadow-lg -translate-y-0.5;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500 inline-block;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-[0.95rem] cursor-pointer transition-all border-2 border-transparent no-underline;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white shadow-md border-primary;
+  }
+
+  .btn-primary:hover {
+    @apply bg-primary-hover -translate-y-[1px] shadow-glow border-primary-hover;
+  }
+
+  .btn-secondary {
+    @apply bg-primary-light text-primary border-primary-light;
+  }
+
+  .btn-secondary:hover {
+    @apply bg-primary/10 border-primary;
+  }
+
+  .btn-outline {
+    @apply bg-transparent border-primary text-primary;
+  }
+
+  .btn-outline:hover {
+    @apply bg-primary text-white;
+  }
+
+  .btn:disabled {
+    @apply opacity-60 cursor-not-allowed transform-none shadow-none border-transparent;
+  }
+
+  .input-label {
+    @apply block font-semibold mb-2 text-text-muted text-sm;
+  }
+
+  .input-group {
+    @apply mb-6;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-lg border border-card-border bg-background text-text-main font-sans text-base transition-all shadow-inner;
+  }
+
+  .input-field:focus {
+    @apply outline-none border-primary ring-2 ring-primary/20;
+  }
+
+  .badge {
+    @apply inline-flex px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+  }
+
+  .badge-success {
+    @apply bg-success-bg text-success;
+  }
+
+  .badge-warning {
+    @apply bg-warning-bg text-warning;
+  }
+
+  .badge-danger {
+    @apply bg-danger-bg text-danger;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
