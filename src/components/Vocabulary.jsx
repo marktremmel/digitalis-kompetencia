@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
-import { vocabularyData } from '../data/vocabulary';
+import { useLanguage } from '../context/LanguageContext';
+import { getVocabularyData } from '../data/vocabulary';
+import { tr } from '../data/translations';
 import { Search, Info, CheckCircle2 } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
 
 export default function Vocabulary({ onBack }) {
     const { progress, markVocabViewed } = useProgress();
+    const { language } = useLanguage();
     const [searchTerm, setSearchTerm] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
+
+    const t = tr[language];
+    const vocabularyData = getVocabularyData(language);
 
     const categories = ['All', ...new Set(vocabularyData.map(v => v.category))];
 
@@ -24,20 +30,20 @@ export default function Vocabulary({ onBack }) {
     return (
         <div className="animate-fade-in py-6">
             <button onClick={onBack} className="btn btn-outline mb-6">
-                &larr; Vissza a Dashboardra
+                &larr; {t.backToDash}
             </button>
 
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold">Szótár & Tudástár</h2>
-                    <p className="text-muted">Ismerd meg a legfontosabb digitális fogalmakat.</p>
+                    <h2 className="text-3xl font-bold">{t.vocabTitleText}</h2>
+                    <p className="text-muted">{t.vocabSubtitle}</p>
                 </div>
 
                 <div className="relative w-full md:w-64">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted" size={18} />
                     <input
                         type="text"
-                        placeholder="Keresés..."
+                        placeholder={t.searchPlaceholder}
                         className="input-field pl-10 w-full"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -53,7 +59,7 @@ export default function Vocabulary({ onBack }) {
                         className={`btn ${activeCategory === cat ? 'btn-primary' : 'bg-card-bg border border-card-border hover:border-primary'}`}
                         style={{ padding: '0.4rem 1rem', fontSize: '0.9rem' }}
                     >
-                        {cat}
+                        {cat === 'All' ? t.allCategory : cat}
                     </button>
                 ))}
             </div>
@@ -71,7 +77,7 @@ export default function Vocabulary({ onBack }) {
 
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="badge badge-warning">{item.category}</span>
-                                {item.essential && <span className="badge bg-primary/10 text-primary">Essential Skill</span>}
+                                {item.essential && <span className="badge bg-primary/10 text-primary">{t.essentialSkill}</span>}
                             </div>
 
                             <h3 className="text-xl font-bold mb-2 pr-8">{item.term}</h3>
@@ -80,7 +86,7 @@ export default function Vocabulary({ onBack }) {
                             {item.didYouKnow && (
                                 <div className="bg-primary/5 p-4 rounded-lg border border-primary/10 mt-4">
                                     <div className="flex items-center gap-2 text-primary font-semibold mb-1">
-                                        <Info size={16} /> Tudtad?
+                                        <Info size={16} /> {t.didYouKnowText}
                                     </div>
                                     <p className="text-sm">{item.didYouKnow}</p>
                                 </div>
@@ -91,7 +97,7 @@ export default function Vocabulary({ onBack }) {
                                     onClick={() => handleRead(item.id)}
                                     className="btn btn-secondary w-full mt-4 text-sm"
                                 >
-                                    Megértettem & Elolvastam
+                                    {t.understoodBtn}
                                 </button>
                             )}
                         </div>
@@ -100,7 +106,7 @@ export default function Vocabulary({ onBack }) {
 
                 {filteredVocab.length === 0 && (
                     <div className="col-span-full text-center py-12 text-muted">
-                        Nem találtunk a keresésnek megfelelő fogalmat.
+                        {t.noResult}
                     </div>
                 )}
             </div>

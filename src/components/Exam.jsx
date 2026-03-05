@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useProgress } from '../context/ProgressContext';
-import { questions } from '../data/questions';
+import { useLanguage } from '../context/LanguageContext';
+import { getQuestions, DOMAIN_TRANSLATIONS } from '../data/questions';
+import { tr } from '../data/translations';
 import { ChevronLeft, Clock, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 
 const EXAM_TIME = 5 * 60; // 5 minutes in seconds
@@ -8,23 +10,27 @@ const EXAM_COUNT = 15;
 
 export default function Exam({ onBack }) {
     const { profile, recordExam } = useProgress();
+    const { language } = useLanguage();
     const [phase, setPhase] = useState('intro'); // intro | running | results
     const [timeLeft, setTimeLeft] = useState(EXAM_TIME);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState({});
 
+    const t = tr[language];
+    const questions = getQuestions(language);
+
     const examQuestions = useMemo(() => {
         const pool = questions.filter(q => q.grade === profile.grade);
         const shuffled = [...pool].sort(() => Math.random() - 0.5);
         return shuffled.slice(0, EXAM_COUNT);
-    }, [profile.grade]);
+    }, [profile.grade, questions]);
 
     // Timer
     useEffect(() => {
         if (phase !== 'running') return;
         if (timeLeft <= 0) { finishExam(); return; }
-        const t = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
-        return () => clearInterval(t);
+        const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+        return () => clearInterval(timer);
     }, [phase, timeLeft]);
 
     const finishExam = useCallback(() => {
@@ -52,23 +58,24 @@ export default function Exam({ onBack }) {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
 
+    const displayedDomain = currentQ ? (language === 'hu' ? currentQ.domain : (DOMAIN_TRANSLATIONS[currentQ.domain] || currentQ.domain)) : '';
+
     // Intro Screen
     if (phase === 'intro') {
         return (
             <div className="animate-fade-in py-6">
-                <button onClick={onBack} className="btn btn-outline mb-6"><ChevronLeft size={18} /> Vissza</button>
+                <button onClick={onBack} className="btn btn-outline mb-6"><ChevronLeft size={18} /> {t.back}</button>
                 <div className="glass-panel p-12 text-center max-w-2xl mx-auto">
                     <div className="p-4 bg-warning/20 rounded-full inline-flex mb-6">
                         <Clock size={48} className="text-warning" />
                     </div>
-                    <h2 className="text-3xl font-bold mb-4">Próbavizsga</h2>
-                    <p className="text-text-muted mb-2">Évfolyam: <strong className="text-primary">{profile.grade}</strong></p>
+                    <h2 className="text-3xl font-bold mb-4">{t.examStartTitle}</h2>
+                    <p className="text-text-muted mb-2">{t.yourGrade.replace(':', '')}: <strong className="text-primary">{profile.grade}{language === 'hu' ? t.gradeSuffix : ''}</strong></p>
                     <p className="text-text-muted mb-8 max-w-md mx-auto">
-                        {examQuestions.length} véletlenszerű kérdés, <strong>5 perc</strong> időkorláttal.
-                        Vizsga közben nem kapsz visszajelzést – csak a végén!
+                        {examQuestions.length} {t.examStartDesc1} <strong>{t.timeLimitOption}</strong> {t.examStartDesc2}
                     </p>
                     <button onClick={() => setPhase('running')} className="btn btn-primary text-lg px-8 py-4">
-                        Indítás! 🚀
+                        {t.startExamBtn}
                     </button>
                 </div>
             </div>
@@ -87,7 +94,7 @@ export default function Exam({ onBack }) {
 
         return (
             <div className="animate-fade-in py-6">
-                <button onClick={onBack} className="btn btn-outline mb-6"><ChevronLeft size={18} /> Vissza</button>
+                <button onClick={onBack} className="btn btn-outline mb-6"><ChevronLeft size={18} /> {t.back}</button>
                 <div className="glass-panel p-12 text-center max-w-2xl mx-auto">
                     <div className={`p-4 rounded-full inline-flex mb-6 ${pct >= 70 ? 'bg-success/20' : 'bg-danger/20'}`}>
                         {pct >= 70
@@ -95,18 +102,18 @@ export default function Exam({ onBack }) {
                             : <AlertTriangle size={48} className="text-danger" />
                         }
                     </div>
-                    <h2 className="text-3xl font-bold mb-2">Eredmény</h2>
+                    <h2 className="text-3xl font-bold mb-2">{t.examResultTitle}</h2>
                     <p className="text-6xl font-black text-gradient mb-4">{pct}%</p>
-                    <p className="text-text-muted mb-8">{correct} / {examQuestions.length} helyes válasz</p>
+                    <p className="text-text-muted mb-8">{correct} / {examQuestions.length} {t.correctAnswersCount}</p>
 
                     {weakAreas.size > 0 && (
                         <div className="text-left bg-warning/10 border border-warning/30 rounded-xl p-6 mb-8">
                             <h4 className="font-bold mb-2 flex items-center gap-2">
-                                <AlertTriangle size={18} className="text-warning" /> Gyenge területek:
+                                <AlertTriangle size={18} className="text-warning" /> {t.weakAreas}
                             </h4>
                             <ul className="space-y-1">
                                 {[...weakAreas].map(area => (
-                                    <li key={area} className="text-sm text-text-muted">• {area}</li>
+                                    <li key={area} className="text-sm text-text-muted">• {language === 'hu' ? area : (DOMAIN_TRANSLATIONS[area] || area)}</li>
                                 ))}
                             </ul>
                         </div>
@@ -114,7 +121,7 @@ export default function Exam({ onBack }) {
 
                     {/* Review answers */}
                     <div className="text-left space-y-4">
-                        <h4 className="font-bold mb-2">Kérdések áttekintése:</h4>
+                        <h4 className="font-bold mb-2">{t.questionReview}</h4>
                         {examQuestions.map((q, i) => {
                             const isCorrect = checkAnswer(q, userAnswers[q.id]);
                             return (
@@ -140,7 +147,7 @@ export default function Exam({ onBack }) {
         <div className="animate-fade-in py-6">
             {/* Timer Bar */}
             <div className="flex items-center justify-between mb-6">
-                <span className="text-sm font-semibold text-text-muted">Kérdés {currentIndex + 1} / {examQuestions.length}</span>
+                <span className="text-sm font-semibold text-text-muted">{t.questionWord} {currentIndex + 1} / {examQuestions.length}</span>
                 <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-sm ${timeLeft < 60 ? 'bg-danger/20 text-danger' : 'bg-primary/10 text-primary'}`}>
                     <Clock size={16} />
                     {minutes}:{seconds.toString().padStart(2, '0')}
@@ -153,7 +160,7 @@ export default function Exam({ onBack }) {
 
             {/* Question */}
             <div className="glass-panel p-8 mb-6">
-                <span className="badge badge-warning mb-4">{currentQ.domain}</span>
+                <span className="badge badge-warning mb-4">{displayedDomain}</span>
                 <h3 className="text-xl font-bold mb-2">{currentQ.title}</h3>
                 <p className="text-text-muted mb-6">{currentQ.task}</p>
 
@@ -211,7 +218,7 @@ export default function Exam({ onBack }) {
                                             onChange={(e) => setUserAnswers(prev => ({ ...prev, [currentQ.id]: { ...(prev[currentQ.id] || {}), [i]: e.target.value } }))}
                                             className="mx-1 px-3 py-1.5 rounded-lg bg-background border border-white/20 text-text-main font-semibold text-sm focus:border-primary focus:outline-none"
                                         >
-                                            <option value="">válassz...</option>
+                                            <option value="">{t.dropdownPlaceholder}</option>
                                             {s.options.map(o => <option key={o} value={o}>{o}</option>)}
                                         </select>
                                         {parts[1]}
@@ -226,13 +233,13 @@ export default function Exam({ onBack }) {
             {/* Navigation */}
             <div className="flex justify-between">
                 <button onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0} className="btn btn-outline text-sm">
-                    <ChevronLeft size={16} /> Előző
+                    <ChevronLeft size={16} /> {t.prev}
                 </button>
                 {currentIndex === examQuestions.length - 1 ? (
-                    <button onClick={finishExam} className="btn btn-primary">Befejezés & Eredmény</button>
+                    <button onClick={finishExam} className="btn btn-primary">{t.finishExamBtn}</button>
                 ) : (
                     <button onClick={() => setCurrentIndex(p => p + 1)} className="btn btn-primary text-sm">
-                        Következő →
+                        {t.next} →
                     </button>
                 )}
             </div>

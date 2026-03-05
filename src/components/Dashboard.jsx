@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useProgress } from '../context/ProgressContext';
+import { useLanguage } from '../context/LanguageContext';
+import { tr } from '../data/translations';
+import { DOMAIN_TRANSLATIONS } from '../data/questions';
 import { Library, LayoutList, Trophy, FileText, ChevronRight, CheckCircle2 } from 'lucide-react';
 import Vocabulary from './Vocabulary';
 import Practice from './Practice';
@@ -8,14 +11,20 @@ import Certificate from './Certificate';
 
 export default function Dashboard() {
     const { profile, progress, logout } = useProgress();
+    const { language } = useLanguage();
     const [activeTab, setActiveTab] = useState('overview');
 
+    const t = tr[language];
+
     const capabilities = [
-        { name: 'IT Eszközök', level: progress.capabilities['IT Eszközök'] },
-        { name: 'Információ', level: progress.capabilities['Információ'] },
-        { name: 'Tartalomalkotás', level: progress.capabilities['Tartalomalkotás'] },
-        { name: 'Kommunikáció & Biztonság', level: progress.capabilities['Kommunikáció & Biztonság'] }
-    ];
+        { key: 'Digitális írástudás', level: progress.capabilities['Digitális írástudás'] },
+        { key: 'Adat- és adatbázis-kezelés', level: progress.capabilities['Adat- és adatbázis-kezelés'] },
+        { key: 'Algoritmizálás', level: progress.capabilities['Algoritmizálás'] },
+        { key: 'IT Eszközök', level: progress.capabilities['IT Eszközök'] },
+    ].map(cap => ({
+        ...cap,
+        name: language === 'hu' ? cap.key : (DOMAIN_TRANSLATIONS[cap.key] || cap.key)
+    }));
 
     if (activeTab === 'vocabulary') return <Vocabulary onBack={() => setActiveTab('overview')} />;
     if (activeTab === 'practice') return <Practice onBack={() => setActiveTab('overview')} />;
@@ -25,8 +34,8 @@ export default function Dashboard() {
     const cards = [
         {
             id: 'vocabulary',
-            title: 'Szótár & Tudástár',
-            desc: 'Ismerd meg az alapvető fogalmakat és olvass érdekes tényeket (pl. Deepfake, MFA).',
+            title: t.vocabTitle,
+            desc: t.vocabDesc,
             icon: Library,
             iconBg: 'bg-primary-light',
             iconColor: 'text-primary',
@@ -34,8 +43,8 @@ export default function Dashboard() {
         },
         {
             id: 'practice',
-            title: 'Gyakorló Feladatok',
-            desc: 'Interaktív feladatok a te évfolyamodra szabva azonnali visszajelzéssel.',
+            title: t.practiceTitle,
+            desc: t.practiceDesc,
             icon: LayoutList,
             iconBg: 'bg-primary',
             iconColor: 'text-white',
@@ -44,8 +53,8 @@ export default function Dashboard() {
         },
         {
             id: 'exam',
-            title: 'Próbavizsga',
-            desc: '5 perces, időre menő teszt 15 véletlenszerű kérdéssel.',
+            title: t.examTitle,
+            desc: t.examDesc,
             icon: FileText,
             iconBg: 'bg-warning/20',
             iconColor: 'text-warning',
@@ -53,8 +62,8 @@ export default function Dashboard() {
         },
         {
             id: 'certificate',
-            title: 'Eredmény & Oklevél',
-            desc: 'Nézd meg a statisztikáidat és generálj PDF oklevelet a teljesítményedről.',
+            title: t.certTitle,
+            desc: t.certDesc,
             icon: Trophy,
             iconBg: 'bg-success/20',
             iconColor: 'text-success',
@@ -67,24 +76,23 @@ export default function Dashboard() {
             {/* Welcome Banner */}
             <div className="glass-panel p-8 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold mb-2">Hello, {profile.name}! 👋</h2>
+                    <h2 className="text-3xl font-bold mb-2">{t.hello}, {profile.name}! 👋</h2>
                     <p className="text-text-muted">
-                        A te évfolyamod: <span className="font-semibold text-primary">{profile.grade}. évfolyam</span>
+                        {t.yourGrade} <span className="font-semibold text-primary">{profile.grade}{language === 'hu' ? t.gradeSuffix : ''}</span>
                     </p>
                     <p className="mt-2 text-sm max-w-2xl opacity-80">
-                        Ezen a felületen interaktív módon gyakorolhatsz a magyarországi digitális kompetenciamérésekre.
-                        Szerezz pontokat a feladatokkal, és érd el a maximális 6. Képességszintet minden kategóriában!
+                        {t.dashDesc}
                     </p>
                 </div>
                 <button onClick={logout} className="btn btn-outline text-sm shrink-0">
-                    Kijelentkezés
+                    {t.logout}
                 </button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column: Actions */}
                 <div className="lg:col-span-2">
-                    <h3 className="text-xl font-bold mb-6">Mit szeretnél csinálni?</h3>
+                    <h3 className="text-xl font-bold mb-6">{t.whatToDo}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {cards.map(card => {
                             const Icon = card.icon;
@@ -110,16 +118,16 @@ export default function Dashboard() {
 
                 {/* Right Column: Gamified Progress */}
                 <div className="glass-panel p-6">
-                    <h3 className="text-xl font-bold mb-6 border-b pb-4 border-white/10">Képességszintek</h3>
+                    <h3 className="text-xl font-bold mb-6 border-b pb-4 border-white/10">{t.levelsTitle}</h3>
                     <p className="text-sm text-text-muted mb-6">
-                        Oldj meg feladatokat, hogy fejleszd a szintjeidet a 4 fő kompetenciaterületen.
+                        {t.levelsDesc}
                     </p>
                     <div className="space-y-5">
                         {capabilities.map(cap => (
-                            <div key={cap.name} className="relative">
-                                <div className="flex justify-between items-end mb-1.5">
-                                    <span className="font-semibold text-sm">{cap.name}</span>
-                                    <span className="text-xs font-bold text-primary">{Math.floor(cap.level)} / 6. Szint</span>
+                            <div key={cap.key} className="relative">
+                                <div className="flex justify-between items-end mb-1.5 gap-2">
+                                    <span className="font-semibold text-sm truncate">{cap.name}</span>
+                                    <span className="text-xs font-bold text-primary shrink-0">{Math.floor(cap.level)} / 6{t.levelSuffix}</span>
                                 </div>
                                 <div className="w-full bg-white/10 rounded-full h-2.5 overflow-hidden">
                                     <div
@@ -132,9 +140,9 @@ export default function Dashboard() {
                         ))}
                     </div>
                     <div className="mt-8 p-4 bg-primary/10 rounded-xl">
-                        <h4 className="font-bold text-sm text-primary mb-1">💡 Tipp:</h4>
+                        <h4 className="font-bold text-sm text-primary mb-1">{t.tipTitle}</h4>
                         <p className="text-xs opacity-80">
-                            Kattints a "Gyakorló Feladatok" gombra, hogy növeld a szintjeidet. Bármelyik évfolyam feladataival megpróbálkozhatsz!
+                            {t.tipDesc}
                         </p>
                     </div>
                 </div>

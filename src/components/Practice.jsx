@@ -1,22 +1,28 @@
 import React, { useState, useMemo } from 'react';
 import { useProgress } from '../context/ProgressContext';
-import { questions } from '../data/questions';
+import { useLanguage } from '../context/LanguageContext';
+import { getQuestions, DOMAIN_TRANSLATIONS } from '../data/questions';
+import { tr } from '../data/translations';
 import { ChevronLeft, CheckCircle2, XCircle, AlertTriangle, ChevronRight } from 'lucide-react';
 
 const gradeOrder = ['5-6', '7-8', '9-11'];
 
 export default function Practice({ onBack }) {
     const { profile, updatePracticeScore } = useProgress();
+    const { language } = useLanguage();
     const [selectedGrade, setSelectedGrade] = useState(profile.grade);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState({});
     const [submitted, setSubmitted] = useState(false);
 
+    const t = tr[language];
+    const questions = getQuestions(language);
+
     const isAboveGrade = gradeOrder.indexOf(selectedGrade) > gradeOrder.indexOf(profile.grade);
 
     const gradeQuestions = useMemo(
         () => questions.filter(q => q.grade === selectedGrade),
-        [selectedGrade]
+        [selectedGrade, questions]
     );
     const currentQ = gradeQuestions[currentIndex];
 
@@ -52,18 +58,20 @@ export default function Practice({ onBack }) {
     if (!currentQ) {
         return (
             <div className="animate-fade-in py-6">
-                <button onClick={onBack} className="btn btn-outline mb-6"><ChevronLeft size={18} /> Vissza</button>
+                <button onClick={onBack} className="btn btn-outline mb-6"><ChevronLeft size={18} /> {t.back}</button>
                 <div className="glass-panel p-12 text-center">
-                    <h3 className="text-2xl font-bold mb-2">Nincs kérdés ehhez az évfolyamhoz</h3>
-                    <p className="text-text-muted">Válassz másik évfolyamot, vagy térj vissza később!</p>
+                    <h3 className="text-2xl font-bold mb-2">{t.noQuestions}</h3>
+                    <p className="text-text-muted">{t.chooseAnother}</p>
                 </div>
             </div>
         );
     }
 
+    const displayedDomain = language === 'hu' ? currentQ.domain : (DOMAIN_TRANSLATIONS[currentQ.domain] || currentQ.domain);
+
     return (
         <div className="animate-fade-in py-6">
-            <button onClick={onBack} className="btn btn-outline mb-6"><ChevronLeft size={18} /> Vissza a Dashboardra</button>
+            <button onClick={onBack} className="btn btn-outline mb-6"><ChevronLeft size={18} /> {t.backToDash}</button>
 
             {/* Grade Selector */}
             <div className="flex flex-wrap gap-3 mb-6">
@@ -73,7 +81,7 @@ export default function Practice({ onBack }) {
                         onClick={() => handleSelectGrade(g)}
                         className={`btn text-sm ${selectedGrade === g ? 'btn-primary' : 'btn-outline'}`}
                     >
-                        {g}. évfolyam
+                        {g}{language === 'hu' ? '. évfolyam' : 'th grade'}
                     </button>
                 ))}
             </div>
@@ -83,7 +91,7 @@ export default function Practice({ onBack }) {
                 <div className="flex items-start gap-3 p-4 rounded-xl bg-warning/10 border border-warning/30 mb-6">
                     <AlertTriangle className="text-warning shrink-0 mt-0.5" size={20} />
                     <p className="text-sm">
-                        <strong>Kihívás!</strong> Ez a feladat a te évfolyamod ({profile.grade}) felett van, de nyugodtan próbáld meg! 💪
+                        <strong>{t.challenge}</strong> {t.aboveGradeWarning}
                     </p>
                 </div>
             )}
@@ -102,8 +110,8 @@ export default function Practice({ onBack }) {
             {/* Question Card */}
             <div className="glass-panel p-8 mb-6">
                 <div className="flex items-center gap-3 mb-4">
-                    <span className="badge badge-warning">{currentQ.domain}</span>
-                    <span className="text-xs text-text-muted">{currentQ.type === 'multiple-select' ? 'Több válasz' : currentQ.type === 'dropdown' ? 'Legördülő' : 'Egy válasz'}</span>
+                    <span className="badge badge-warning">{displayedDomain}</span>
+                    <span className="text-xs text-text-muted">{currentQ.type === 'multiple-select' ? t.typeMultiB : currentQ.type === 'dropdown' ? t.typeDropdown : t.typeMultiA}</span>
                 </div>
 
                 <h3 className="text-xl font-bold mb-2">{currentQ.title}</h3>
@@ -117,7 +125,7 @@ export default function Practice({ onBack }) {
                     <MultipleSelectQ q={currentQ} userAnswers={userAnswers} setUserAnswers={setUserAnswers} submitted={submitted} />
                 )}
                 {currentQ.type === 'dropdown' && (
-                    <DropdownQ q={currentQ} userAnswers={userAnswers} setUserAnswers={setUserAnswers} submitted={submitted} />
+                    <DropdownQ q={currentQ} userAnswers={userAnswers} setUserAnswers={setUserAnswers} submitted={submitted} t={t} />
                 )}
 
                 {/* Feedback */}
@@ -125,8 +133,8 @@ export default function Practice({ onBack }) {
                     <div className={`mt-6 p-4 rounded-xl border ${checkAnswer(currentQ, userAnswers[currentQ.id]) ? 'bg-success/10 border-success/30' : 'bg-danger/10 border-danger/30'}`}>
                         <div className="flex items-center gap-2 mb-2">
                             {checkAnswer(currentQ, userAnswers[currentQ.id])
-                                ? <><CheckCircle2 className="text-success" size={20} /><span className="font-bold text-success">Helyes! 🎉</span></>
-                                : <><XCircle className="text-danger" size={20} /><span className="font-bold text-danger">Nem egészen!</span></>
+                                ? <><CheckCircle2 className="text-success" size={20} /><span className="font-bold text-success">{t.correct}</span></>
+                                : <><XCircle className="text-danger" size={20} /><span className="font-bold text-danger">{t.incorrect}</span></>
                             }
                         </div>
                         <p className="text-sm opacity-90">{currentQ.explanation}</p>
@@ -137,14 +145,14 @@ export default function Practice({ onBack }) {
             {/* Actions */}
             <div className="flex justify-between items-center">
                 <button onClick={handlePrev} disabled={currentIndex === 0} className="btn btn-outline text-sm">
-                    <ChevronLeft size={16} /> Előző
+                    <ChevronLeft size={16} /> {t.prev}
                 </button>
                 <div className="flex gap-3">
                     {!submitted ? (
-                        <button onClick={handleSubmit} className="btn btn-primary">Ellenőrzés</button>
+                        <button onClick={handleSubmit} className="btn btn-primary">{t.check}</button>
                     ) : (
                         <button onClick={handleNext} disabled={currentIndex === gradeQuestions.length - 1} className="btn btn-primary">
-                            Következő <ChevronRight size={16} />
+                            {t.next} <ChevronRight size={16} />
                         </button>
                     )}
                 </div>
@@ -215,7 +223,7 @@ function MultipleSelectQ({ q, userAnswers, setUserAnswers, submitted }) {
     );
 }
 
-function DropdownQ({ q, userAnswers, setUserAnswers, submitted }) {
+function DropdownQ({ q, userAnswers, setUserAnswers, submitted, t }) {
     const answers = userAnswers[q.id] || {};
     return (
         <div className="space-y-5">
@@ -233,13 +241,13 @@ function DropdownQ({ q, userAnswers, setUserAnswers, submitted }) {
                                 onChange={(e) => setUserAnswers(prev => ({ ...prev, [q.id]: { ...answers, [i]: e.target.value } }))}
                                 className="mx-1 px-3 py-1.5 rounded-lg bg-background border border-white/20 text-text-main font-semibold text-sm focus:border-primary focus:outline-none"
                             >
-                                <option value="">válassz...</option>
+                                <option value="">{t.dropdownPlaceholder}</option>
                                 {s.options.map(o => <option key={o} value={o}>{o}</option>)}
                             </select>
                             {parts[1]}
                         </p>
                         {submitted && !isCorrect && (
-                            <p className="text-xs text-danger mt-2">Helyes válasz: <strong>{s.correct}</strong></p>
+                            <p className="text-xs text-danger mt-2">{t.correctAnswerIs} <strong>{s.correct}</strong></p>
                         )}
                     </div>
                 );

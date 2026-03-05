@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { useProgress } from '../context/ProgressContext';
+import { useLanguage } from '../context/LanguageContext';
+import { tr } from '../data/translations';
 import { User, GraduationCap, ChevronRight } from 'lucide-react';
 
 export default function Login() {
     const { login } = useProgress();
+    const { language } = useLanguage();
     const [name, setName] = useState('');
     const [grade, setGrade] = useState('');
+
+    const t = tr[language];
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -23,12 +28,12 @@ export default function Login() {
                     </div>
                 </div>
 
-                <h2 className="text-2xl font-bold mb-2">Üdvözlünk!</h2>
-                <p className="text-muted mb-8">Jelentkezz be, hogy elkezdhesd a digitális kompetencia felkészülést.</p>
+                <h2 className="text-2xl font-bold mb-2">{t.welcome}</h2>
+                <p className="text-muted mb-8">{t.loginDesc}</p>
 
                 <form onSubmit={handleLogin} className="text-left">
                     <div className="input-group">
-                        <label className="input-label" htmlFor="name">Neved</label>
+                        <label className="input-label" htmlFor="name">{t.nameLabel}</label>
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted">
                                 <User size={18} />
@@ -37,7 +42,7 @@ export default function Login() {
                                 id="name"
                                 type="text"
                                 className="input-field pl-10"
-                                placeholder="Pl. Kovács András"
+                                placeholder={t.namePlaceholder}
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 required
@@ -46,7 +51,7 @@ export default function Login() {
                     </div>
 
                     <div className="input-group">
-                        <label className="input-label" htmlFor="grade">Évfolyamod</label>
+                        <label className="input-label" htmlFor="grade">{t.gradeLabel}</label>
                         <select
                             id="grade"
                             className="input-field"
@@ -54,10 +59,10 @@ export default function Login() {
                             onChange={(e) => setGrade(e.target.value)}
                             required
                         >
-                            <option value="" disabled>Válassz évfolyamot...</option>
-                            <option value="5-6">5-6. évfolyam</option>
-                            <option value="7-8">7-8. évfolyam</option>
-                            <option value="9-11">9-11. évfolyam</option>
+                            <option value="" disabled>{t.gradeSelect}</option>
+                            <option value="5-6">5-6{language === 'hu' ? '. évfolyam' : 'th grade'}</option>
+                            <option value="7-8">7-8{language === 'hu' ? '. évfolyam' : 'th grade'}</option>
+                            <option value="9-11">9-11{language === 'hu' ? '. évfolyam' : 'th grade'}</option>
                         </select>
                     </div>
 
@@ -66,7 +71,7 @@ export default function Login() {
                         className="btn btn-primary w-full mt-4"
                         disabled={!name.trim() || !grade}
                     >
-                        Belépés
+                        {t.loginBtn}
                         <ChevronRight size={18} />
                     </button>
                 </form>

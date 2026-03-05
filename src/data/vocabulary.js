@@ -1,5 +1,6 @@
 // Comprehensive vocabulary for OKM Digital Competency
 // Organized by the 4 tartalmi keret domains
+import { vocabularyEn } from './vocabulary_en';
 
 export const vocabularyData = [
     // ════════ DIGITÁLIS ÍRÁSTUDÁS ════════
@@ -315,3 +316,7 @@ export const vocabularyData = [
         essential: false, didYouKnow: 'A WHO szerint kamaszoknak napi max 2 óra képernyőidő ajánlott!'
     },
 ];
+
+export const getVocabularyData = (language) => {
+    return language === 'en' ? vocabularyEn : vocabularyData;
+};
