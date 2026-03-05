@@ -1,16 +1,41 @@
-# React + Vite
+# 🎓 OKM Digitális Kompetencia Gyakorló
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interaktív gyakorló platform az **Országos Kompetenciamérés (OKM)** digitális kultúra mérési területéhez, az hivatalos **Tartalmi Keret 2025** alapján.
 
-Currently, two official plugins are available:
+🔗 **[Próbáld ki élőben →](https://marktremmel.github.io/digitalis-kompetencia/)**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Funkciók
 
-## React Compiler
+- **📝 Gyakorló mód** — 165+ kérdés három kérdéstípussal (feleletválasztós, többszörös választás, legördülő), minden évfolyamra (5–11.)
+- **🧪 Próbavizsga** — 5 perces vizsgaszimuláció véletlenszerű kérdésekkel és eredménykiértékeléssel
+- **📚 Fogalomtár** — 60 kulcsfogalom definícióval és érdekességekkel
+- **📊 Képességszint-követés** — Automatikus szintfelmérés a 4 tartalmi terület mentén
+- **📜 Tanúsítvány** — PDF generálás az elért eredményekről
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🏗️ A 4 tartalmi terület (a Tartalmi Keret alapján)
 
-## Expanding the ESLint configuration
+| # | Terület | Altémák |
+|---|---------|---------|
+| 1 | **Digitális írástudás** | Fájlkezelés, böngészők, szövegszerkesztés, prezentáció, grafika, multimédia, weblapszerkesztés, álhírek, netikett, digitális lábnyom |
+| 2 | **Adat- és adatbázis-kezelés** | Adat vs. információ, GDPR, táblázatkezelés, SQL, relációs adatbázisok, big data |
+| 3 | **Algoritmizálás, programozás, robotika, MI** | Folyamatábrák, változók, ciklusok, blokkprogramozás, szenzorok, gépi tanulás, LLM-ek |
+| 4 | **Információs technológiák** | Hardver/szoftver, hálózatok, IoT, felhő, kiberbiztonság, okoseszközök, e-ügyintézés |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛠️ Technológia
+
+- **React** + **Vite**
+- **Tailwind CSS**
+- **jsPDF** (tanúsítványgenerálás)
+- **localStorage** (mentés böngészőben)
+
+## 🚀 Fejlesztés
+
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # Production build → dist/
+```
+
+## 📄 Licenc
+
+Oktatási célra szabadon felhasználható.
