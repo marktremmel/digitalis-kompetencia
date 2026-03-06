@@ -16,6 +16,10 @@ export const tr = {
         dashDesc: 'Ezen a felületen interaktív módon gyakorolhatsz a magyarországi digitális kompetenciamérésekre. Szerezz pontokat a feladatokkal, és érd el a maximális 6. Képességszintet minden kategóriában!',
         logout: 'Kijelentkezés',
         whatToDo: 'Mit szeretnél csinálni?',
+        exportProgressBtn: 'Mentés (Export)',
+        importProgressBtn: 'Betöltés (Import)',
+        importSuccess: 'Sikeres betöltés! A kódod frissítve lett.',
+        importError: 'Hiba a betöltés során! Érvénytelen fájl.',
 
         vocabTitle: 'Szótár & Tudástár',
         vocabDesc: 'Ismerd meg az alapvető fogalmakat és olvass érdekes tényeket (pl. Deepfake, MFA).',
@@ -74,8 +78,13 @@ export const tr = {
         solvedTasks: 'Megoldott feladatok',
         avgScore: 'Átlagos pontszám',
         examsTaken: 'Vizsgák száma',
+        avgExamScore: 'Átlagos vizsgaeredmény',
+        timeSpent: 'Eltöltött idő',
+        timeMin: 'p',
+        timeHour: 'ó',
         downloadCert: 'Oklevél Letöltése (PDF)',
         pdfError: 'PDF generálás hiba: ',
+        vocabLearned: 'Megismert fogalmak',
 
         // Vocabulary
         vocabTitleText: 'Szótár & Tudástár',
@@ -86,6 +95,17 @@ export const tr = {
         didYouKnowText: 'Tudtad?',
         understoodBtn: 'Megértettem & Elolvastam',
         noResult: 'Nem találtunk a keresésnek megfelelő fogalmat.',
+
+        // Flashcards / Vocab Test
+        startVocabTest: 'Tanulókártya Teszt Indítása',
+        testKnownCards: 'Már olvasott szavak tesztelése',
+        testUnknownCards: 'Új szavak tesztelése',
+        testFinished: 'Teszt befejezve! 🎉',
+        selectDefinition: 'Válaszd ki a helyes definíciót:',
+        continueTest: 'Tovább',
+        cardsRemaining: 'Hátralévő kártyák:',
+        backToDictionary: 'Vissza a Szótárhoz',
+        noCardsAvailable: 'Nincsenek kártyák ebben a kategóriában!',
     },
     en: {
         // Login
@@ -104,6 +124,10 @@ export const tr = {
         dashDesc: 'On this platform, you can interactively practice for digital competency assessments. Earn points with tasks and reach the maximum Level 6 in all categories!',
         logout: 'Logout',
         whatToDo: 'What would you like to do?',
+        exportProgressBtn: 'Save (Export)',
+        importProgressBtn: 'Load (Import)',
+        importSuccess: 'Successfully loaded! Your progress is updated.',
+        importError: 'Error parsing the file! Invalid format.',
 
         vocabTitle: 'Dictionary & Knowledge Base',
         vocabDesc: 'Learn basic terms and read interesting facts (e.g., Deepfake, MFA).',
@@ -162,8 +186,13 @@ export const tr = {
         solvedTasks: 'Solved Tasks',
         avgScore: 'Average Score',
         examsTaken: 'Exams Taken',
+        avgExamScore: 'Average Exam Score',
+        timeSpent: 'Time Spent',
+        timeMin: 'm',
+        timeHour: 'h',
         downloadCert: 'Download Certificate (PDF)',
         pdfError: 'PDF generation error: ',
+        vocabLearned: 'Vocabulary Learned',
 
         // Vocabulary
         vocabTitleText: 'Dictionary & Knowledge Base',
@@ -174,5 +203,16 @@ export const tr = {
         didYouKnowText: 'Did you know?',
         understoodBtn: 'I understood & read this',
         noResult: 'No concepts found matching your search.',
+
+        // Flashcards / Vocab Test
+        startVocabTest: 'Start Flashcards Test',
+        testKnownCards: 'Test Known Words',
+        testUnknownCards: 'Test Unknown Words',
+        testFinished: 'Test Complete! 🎉',
+        selectDefinition: 'Select the correct definition:',
+        continueTest: 'Continue',
+        cardsRemaining: 'Cards remaining:',
+        backToDictionary: 'Back to Dictionary',
+        noCardsAvailable: 'No cards available in this category!',
     }
 };

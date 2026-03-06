@@ -3,18 +3,49 @@ import { useProgress } from '../context/ProgressContext';
 import { useLanguage } from '../context/LanguageContext';
 import { tr } from '../data/translations';
 import { DOMAIN_TRANSLATIONS } from '../data/questions';
-import { Library, LayoutList, Trophy, FileText, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Library, LayoutList, Trophy, FileText, ChevronRight, CheckCircle2, Download, Upload } from 'lucide-react';
 import Vocabulary from './Vocabulary';
 import Practice from './Practice';
 import Exam from './Exam';
 import Certificate from './Certificate';
 
 export default function Dashboard() {
-    const { profile, progress, logout } = useProgress();
+    const { profile, progress, logout, exportProgress, importProgress } = useProgress();
     const { language } = useLanguage();
     const [activeTab, setActiveTab] = useState('overview');
 
     const t = tr[language];
+
+    const handleExport = () => {
+        const data = exportProgress();
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `okm_progress_${profile.name.replace(/\s+/g, '_')}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
+    const handleImport = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const success = importProgress(event.target.result);
+            if (success) {
+                alert(t.importSuccess);
+            } else {
+                alert(t.importError);
+            }
+        };
+        reader.readAsText(file);
+        // Reset input so the same file can be selected again if needed
+        e.target.value = null;
+    };
 
     const capabilities = [
         { key: 'Digitális írástudás', level: progress.capabilities['Digitális írástudás'] },
@@ -84,9 +115,18 @@ export default function Dashboard() {
                         {t.dashDesc}
                     </p>
                 </div>
-                <button onClick={logout} className="btn btn-outline text-sm shrink-0">
-                    {t.logout}
-                </button>
+                <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+                    <button onClick={handleExport} className="btn bg-white/5 border border-white/10 hover:border-white/30 text-sm flex items-center justify-center gap-2">
+                        <Download size={16} /> {t.exportProgressBtn}
+                    </button>
+                    <label className="btn bg-white/5 border border-white/10 hover:border-white/30 text-sm flex items-center justify-center gap-2 cursor-pointer">
+                        <Upload size={16} /> {t.importProgressBtn}
+                        <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+                    </label>
+                    <button onClick={logout} className="btn btn-outline text-sm">
+                        {t.logout}
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useProgress } from '../context/ProgressContext';
 import { useLanguage } from '../context/LanguageContext';
 import { getQuestions, DOMAIN_TRANSLATIONS } from '../data/questions';
@@ -8,7 +8,7 @@ import { ChevronLeft, CheckCircle2, XCircle, AlertTriangle, ChevronRight } from 
 const gradeOrder = ['5-6', '7-8', '9-11'];
 
 export default function Practice({ onBack }) {
-    const { profile, updatePracticeScore } = useProgress();
+    const { profile, updatePracticeScore, addTimeSpent } = useProgress();
     const { language } = useLanguage();
     const [selectedGrade, setSelectedGrade] = useState(profile.grade);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -20,11 +20,19 @@ export default function Practice({ onBack }) {
 
     const isAboveGrade = gradeOrder.indexOf(selectedGrade) > gradeOrder.indexOf(profile.grade);
 
-    const gradeQuestions = useMemo(
-        () => questions.filter(q => q.grade === selectedGrade),
-        [selectedGrade, questions]
-    );
+    const gradeQuestions = useMemo(() => {
+        const filtered = questions.filter(q => q.grade === selectedGrade);
+        return [...filtered].sort(() => Math.random() - 0.5);
+    }, [selectedGrade, questions]);
     const currentQ = gradeQuestions[currentIndex];
+
+    useEffect(() => {
+        const startTime = Date.now();
+        return () => {
+            const elapsed = Math.round((Date.now() - startTime) / 1000);
+            if (elapsed > 0) addTimeSpent(elapsed);
+        };
+    }, [addTimeSpent]);
 
     const handleSelectGrade = (g) => {
         setSelectedGrade(g);

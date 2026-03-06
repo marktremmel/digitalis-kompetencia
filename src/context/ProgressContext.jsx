@@ -21,6 +21,7 @@ export function ProgressProvider({ children }) {
                 'IT Eszközök': 0,
             },
             examsTaken: [],
+            timeSpent: 0,
         };
     });
 
@@ -42,6 +43,7 @@ export function ProgressProvider({ children }) {
             correctQuestions: [],
             capabilities: { 'Digitális írástudás': 0, 'Adat- és adatbázis-kezelés': 0, 'Algoritmizálás': 0, 'IT Eszközök': 0 },
             examsTaken: [],
+            timeSpent: 0,
         });
         localStorage.removeItem('okm_profile');
         localStorage.removeItem('okm_progress');
@@ -86,6 +88,13 @@ export function ProgressProvider({ children }) {
         }));
     };
 
+    const addTimeSpent = (seconds) => {
+        setProgress(prev => ({
+            ...prev,
+            timeSpent: (prev.timeSpent || 0) + seconds,
+        }));
+    };
+
     // Export/Import for save/load feature
     const exportProgress = () => {
         return JSON.stringify({ profile, progress });
@@ -105,7 +114,7 @@ export function ProgressProvider({ children }) {
     return (
         <ProgressContext.Provider value={{
             profile, progress, login, logout, markVocabViewed,
-            updatePracticeScore, recordExam, exportProgress, importProgress,
+            updatePracticeScore, recordExam, addTimeSpent, exportProgress, importProgress,
         }}>
             {children}
         </ProgressContext.Provider>

@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { getVocabularyData } from '../data/vocabulary';
 import { tr } from '../data/translations';
-import { Search, Info, CheckCircle2 } from 'lucide-react';
+import { Search, Info, CheckCircle2, Brain } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
+import VocabTest from './VocabTest';
 
 export default function Vocabulary({ onBack }) {
     const { progress, markVocabViewed } = useProgress();
     const { language } = useLanguage();
     const [searchTerm, setSearchTerm] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
+    const [viewMode, setViewMode] = useState('dictionary'); // dictionary | test
 
     const t = tr[language];
     const vocabularyData = getVocabularyData(language);
@@ -27,6 +29,10 @@ export default function Vocabulary({ onBack }) {
         markVocabViewed(id);
     };
 
+    if (viewMode === 'test') {
+        return <VocabTest vocabList={vocabularyData} onBack={() => setViewMode('dictionary')} />;
+    }
+
     return (
         <div className="animate-fade-in py-6">
             <button onClick={onBack} className="btn btn-outline mb-6">
@@ -35,33 +41,41 @@ export default function Vocabulary({ onBack }) {
 
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold">{t.vocabTitleText}</h2>
-                    <p className="text-muted">{t.vocabSubtitle}</p>
+                    <h2 className="text-3xl font-bold mb-2">{t.vocabTitleText}</h2>
+                    <p className="text-text-muted">{t.vocabSubtitle}</p>
                 </div>
 
-                <div className="relative w-full md:w-64">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted" size={18} />
+                <button
+                    onClick={() => setViewMode('test')}
+                    className="btn btn-primary flex items-center gap-2 shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] transition-shadow"
+                >
+                    <Brain size={18} /> {t.startVocabTest}
+                </button>
+            </div>
+
+            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <div className="flex flex-wrap gap-2 w-full md:w-auto">
+                    {categories.map(cat => (
+                        <button
+                            key={cat}
+                            onClick={() => setActiveCategory(cat)}
+                            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${activeCategory === cat ? 'bg-primary text-white shadow-md' : 'bg-white/5 hover:bg-white/10 text-text-muted hover:text-white'}`}
+                        >
+                            {cat === 'All' ? t.allCategory : cat}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="relative w-full md:w-64 shrink-0">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted" size={18} />
                     <input
                         type="text"
                         placeholder={t.searchPlaceholder}
-                        className="input-field pl-10 w-full"
+                        className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2 mb-8">
-                {categories.map(cat => (
-                    <button
-                        key={cat}
-                        onClick={() => setActiveCategory(cat)}
-                        className={`btn ${activeCategory === cat ? 'btn-primary' : 'bg-card-bg border border-card-border hover:border-primary'}`}
-                        style={{ padding: '0.4rem 1rem', fontSize: '0.9rem' }}
-                    >
-                        {cat === 'All' ? t.allCategory : cat}
-                    </button>
-                ))}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

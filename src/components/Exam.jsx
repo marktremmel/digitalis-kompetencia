@@ -9,7 +9,7 @@ const EXAM_TIME = 5 * 60; // 5 minutes in seconds
 const EXAM_COUNT = 15;
 
 export default function Exam({ onBack }) {
-    const { profile, recordExam } = useProgress();
+    const { profile, recordExam, addTimeSpent } = useProgress();
     const { language } = useLanguage();
     const [phase, setPhase] = useState('intro'); // intro | running | results
     const [timeLeft, setTimeLeft] = useState(EXAM_TIME);
@@ -24,6 +24,14 @@ export default function Exam({ onBack }) {
         const shuffled = [...pool].sort(() => Math.random() - 0.5);
         return shuffled.slice(0, EXAM_COUNT);
     }, [profile.grade, questions]);
+
+    useEffect(() => {
+        const startTime = Date.now();
+        return () => {
+            const elapsed = Math.round((Date.now() - startTime) / 1000);
+            if (elapsed > 0) addTimeSpent(elapsed);
+        };
+    }, [addTimeSpent]);
 
     // Timer
     useEffect(() => {
