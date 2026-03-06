@@ -41,9 +41,6 @@ export default function VocabTest({ vocabList, onBack }) {
     };
 
     const prepareQuestion = (currentCard) => {
-        // Automatically mark as viewed if testing unknown
-        markVocabViewed(currentCard.id);
-
         // Pick 3 random wrong definitions
         const others = vocabList.filter(v => v.id !== currentCard.id);
         const shuffledOthers = [...others].sort(() => Math.random() - 0.5).slice(0, 3);
@@ -67,7 +64,8 @@ export default function VocabTest({ vocabList, onBack }) {
         const currentCard = pile[0];
 
         if (selectedId === currentCard.id) {
-            // Correct! Remove from pile
+            // Correct! Mark as viewed and remove from pile
+            markVocabViewed(currentCard.id);
             const newPile = pile.slice(1);
             if (newPile.length === 0) {
                 setTestPhase('results');
